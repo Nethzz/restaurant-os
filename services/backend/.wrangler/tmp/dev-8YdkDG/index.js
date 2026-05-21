@@ -19140,6 +19140,15 @@ var OpenAPIHono = class OpenAPIHono2 extends Hono2 {
     });
   }
 };
+var createRoute = /* @__PURE__ */ __name((routeConfig) => {
+  const route = {
+    ...routeConfig,
+    getRoutingPath() {
+      return routeConfig.path.replaceAll(/\/{(.+?)}/g, "/:$1");
+    }
+  };
+  return Object.defineProperty(route, "getRoutingPath", { enumerable: false });
+}, "createRoute");
 extendZodWithOpenApi(external_exports);
 function addBasePathToDocument(document, basePath) {
   const updatedPaths = {};
@@ -29445,6 +29454,31 @@ var selectOrderSchema = createSelectSchema(orders);
 var insertSettingsSchema = createInsertSchema(settings);
 var selectSettingsSchema = createSelectSchema(settings);
 
+// src/routes/menu-items.ts
+var getMenuItemsRoute = createRoute({
+  method: "get",
+  path: "/menu-items",
+  tags: ["Menu"],
+  responses: {
+    200: {
+      description: "List of menu items",
+      content: {
+        "application/json": {
+          schema: external_exports.array(
+            external_exports.object({
+              id: external_exports.number(),
+              categoryId: external_exports.number().nullable(),
+              name: external_exports.string(),
+              price: external_exports.string(),
+              available: external_exports.boolean().nullable()
+            })
+          )
+        }
+      }
+    }
+  }
+});
+
 // src/index.ts
 var app = new OpenAPIHono();
 app.get("/", (c) => {
@@ -29452,7 +29486,7 @@ app.get("/", (c) => {
     message: "RestaurantOS API"
   });
 });
-app.get("/menu-items", async (c) => {
+app.openapi(getMenuItemsRoute, async (c) => {
   const db = getDb();
   return c.json(await db.select().from(menuItems));
 });

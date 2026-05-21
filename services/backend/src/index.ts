@@ -10,6 +10,7 @@ import {
     orders,
     settings,
 } from './db/schema';
+import { getMenuItemsRoute } from './routes/menu-items';
 
 const app = new OpenAPIHono();
 
@@ -19,7 +20,7 @@ app.get('/', (c) => {
     });
 });
 
-app.get('/menu-items', async (c) => {
+app.openapi(getMenuItemsRoute, async (c) => {
     const db = getDb();
     return c.json(await db.select().from(menuItems));
 });
