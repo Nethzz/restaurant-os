@@ -8,6 +8,8 @@ import {
     timestamp,
 } from 'drizzle-orm/pg-core';
 
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+
 export const menuCategories = pgTable('menu_categories', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
@@ -47,3 +49,35 @@ export const settings = pgTable('settings', {
     prepTimeMinutes: integer('prep_time_minutes').default(15),
     autoAcceptOrders: boolean('auto_accept_orders').default(false),
 });
+
+/* ---------- Zod Schemas ---------- */
+
+export const insertMenuCategorySchema =
+    createInsertSchema(menuCategories);
+
+export const selectMenuCategorySchema =
+    createSelectSchema(menuCategories);
+
+export const insertMenuItemSchema =
+    createInsertSchema(menuItems);
+
+export const selectMenuItemSchema =
+    createSelectSchema(menuItems);
+
+export const insertCustomerSchema =
+    createInsertSchema(customers);
+
+export const selectCustomerSchema =
+    createSelectSchema(customers);
+
+export const insertOrderSchema =
+    createInsertSchema(orders);
+
+export const selectOrderSchema =
+    createSelectSchema(orders);
+
+export const insertSettingsSchema =
+    createInsertSchema(settings);
+
+export const selectSettingsSchema =
+    createSelectSchema(settings);
