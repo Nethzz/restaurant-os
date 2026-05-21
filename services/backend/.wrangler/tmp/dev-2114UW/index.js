@@ -11844,9 +11844,9 @@ var PostgresJsPreparedQuery = class extends PgPreparedQuery {
   static {
     __name(this, "PostgresJsPreparedQuery");
   }
-  constructor(client2, queryString, params, logger, cache, queryMetadata, cacheConfig, fields, _isResponseInArrayMode, customResultMapper) {
+  constructor(client, queryString, params, logger, cache, queryMetadata, cacheConfig, fields, _isResponseInArrayMode, customResultMapper) {
     super({ sql: queryString, params }, cache, queryMetadata, cacheConfig);
-    this.client = client2;
+    this.client = client;
     this.queryString = queryString;
     this.params = params;
     this.logger = logger;
@@ -11863,11 +11863,11 @@ var PostgresJsPreparedQuery = class extends PgPreparedQuery {
         "drizzle.query.params": JSON.stringify(params)
       });
       this.logger.logQuery(this.queryString, params);
-      const { fields, queryString: query, client: client2, joinsNotNullableMap, customResultMapper } = this;
+      const { fields, queryString: query, client, joinsNotNullableMap, customResultMapper } = this;
       if (!fields && !customResultMapper) {
         return tracer.startActiveSpan("drizzle.driver.execute", () => {
           return this.queryWithCache(query, params, async () => {
-            return await client2.unsafe(query, params);
+            return await client.unsafe(query, params);
           });
         });
       }
@@ -11877,7 +11877,7 @@ var PostgresJsPreparedQuery = class extends PgPreparedQuery {
           "drizzle.query.params": JSON.stringify(params)
         });
         return this.queryWithCache(query, params, async () => {
-          return await client2.unsafe(query, params).values();
+          return await client.unsafe(query, params).values();
         });
       });
       return tracer.startActiveSpan("drizzle.mapResponse", () => {
@@ -11913,9 +11913,9 @@ var PostgresJsSession = class _PostgresJsSession extends PgSession {
   static {
     __name(this, "PostgresJsSession");
   }
-  constructor(client2, dialect, schema, options = {}) {
+  constructor(client, dialect, schema, options = {}) {
     super(dialect);
-    this.client = client2;
+    this.client = client;
     this.schema = schema;
     this.options = options;
     this.logger = options.logger ?? new NoopLogger();
@@ -11946,9 +11946,9 @@ var PostgresJsSession = class _PostgresJsSession extends PgSession {
     return this.client.unsafe(query, params);
   }
   transaction(transaction, config) {
-    return this.client.begin(async (client2) => {
+    return this.client.begin(async (client) => {
       const session = new _PostgresJsSession(
-        client2,
+        client,
         this.dialect,
         this.schema,
         this.options
@@ -11971,9 +11971,9 @@ var PostgresJsTransaction = class _PostgresJsTransaction extends PgTransaction {
   }
   static [entityKind] = "PostgresJsTransaction";
   transaction(transaction) {
-    return this.session.client.savepoint((client2) => {
+    return this.session.client.savepoint((client) => {
       const session = new PostgresJsSession(
-        client2,
+        client,
         this.dialect,
         this.schema,
         this.session.options
@@ -11991,14 +11991,14 @@ var PostgresJsDatabase = class extends PgDatabase {
   }
   static [entityKind] = "PostgresJsDatabase";
 };
-function construct(client2, config = {}) {
+function construct(client, config = {}) {
   const transparentParser = /* @__PURE__ */ __name((val) => val, "transparentParser");
   for (const type of ["1184", "1082", "1083", "1114", "1182", "1185", "1115", "1231"]) {
-    client2.options.parsers[type] = transparentParser;
-    client2.options.serializers[type] = transparentParser;
+    client.options.parsers[type] = transparentParser;
+    client.options.serializers[type] = transparentParser;
   }
-  client2.options.serializers["114"] = transparentParser;
-  client2.options.serializers["3802"] = transparentParser;
+  client.options.serializers["114"] = transparentParser;
+  client.options.serializers["3802"] = transparentParser;
   const dialect = new PgDialect({ casing: config.casing });
   let logger;
   if (config.logger === true) {
@@ -12018,14 +12018,14 @@ function construct(client2, config = {}) {
       tableNamesMap: tablesConfig.tableNamesMap
     };
   }
-  const session = new PostgresJsSession(client2, dialect, schema, { logger, cache: config.cache });
-  const db2 = new PostgresJsDatabase(dialect, session, schema);
-  db2.$client = client2;
-  db2.$cache = config.cache;
-  if (db2.$cache) {
-    db2.$cache["invalidate"] = config.cache?.onMutate;
+  const session = new PostgresJsSession(client, dialect, schema, { logger, cache: config.cache });
+  const db = new PostgresJsDatabase(dialect, session, schema);
+  db.$client = client;
+  db.$cache = config.cache;
+  if (db.$cache) {
+    db.$cache["invalidate"] = config.cache?.onMutate;
   }
-  return db2;
+  return db;
 }
 __name(construct, "construct");
 function drizzle(...params) {
@@ -12034,8 +12034,8 @@ function drizzle(...params) {
     return construct(instance, params[1]);
   }
   if (isConfig(params[0])) {
-    const { connection: connection2, client: client2, ...drizzleConfig } = params[0];
-    if (client2) return construct(client2, drizzleConfig);
+    const { connection: connection2, client, ...drizzleConfig } = params[0];
+    if (client) return construct(client, drizzleConfig);
     if (typeof connection2 === "object" && connection2.url !== void 0) {
       const { url, ...config } = connection2;
       const instance2 = src_default(url, config);
@@ -12061,14 +12061,48 @@ __name(drizzle, "drizzle");
 })(drizzle || (drizzle = {}));
 
 // src/db/index.ts
-var client = src_default("postgresql://neethu@localhost:5432/restaurant_os");
-var db = drizzle(client);
+function getDb() {
+  const client = src_default(
+    "postgresql://neethu@localhost:5432/restaurant_os"
+  );
+  return drizzle(client);
+}
+__name(getDb, "getDb");
 
 // src/db/schema.ts
+var menuCategories = pgTable("menu_categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull()
+});
 var menuItems = pgTable("menu_items", {
   id: serial("id").primaryKey(),
+  categoryId: integer("category_id").references(() => menuCategories.id),
   name: text("name").notNull(),
-  price: numeric("price").notNull()
+  price: numeric("price").notNull(),
+  available: boolean("available").default(true)
+});
+var customers = pgTable("customers", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email")
+});
+var orders = pgTable("orders", {
+  id: serial("id").primaryKey(),
+  customerId: integer("customer_id").references(() => customers.id),
+  status: text("status").notNull(),
+  total: numeric("total").notNull(),
+  createdAt: timestamp("created_at").defaultNow()
+});
+var orderItems = pgTable("order_items", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id").references(() => orders.id),
+  menuItemId: integer("menu_item_id").references(() => menuItems.id),
+  quantity: integer("quantity").notNull()
+});
+var settings = pgTable("settings", {
+  id: serial("id").primaryKey(),
+  prepTimeMinutes: integer("prep_time_minutes").default(15),
+  autoAcceptOrders: boolean("auto_accept_orders").default(false)
 });
 
 // src/index.ts
@@ -12079,8 +12113,24 @@ app.get("/", (c) => {
   });
 });
 app.get("/menu-items", async (c) => {
-  const items = await db.select().from(menuItems);
-  return c.json(items);
+  const db = getDb();
+  return c.json(await db.select().from(menuItems));
+});
+app.get("/menu-categories", async (c) => {
+  const db = getDb();
+  return c.json(await db.select().from(menuCategories));
+});
+app.get("/customers", async (c) => {
+  const db = getDb();
+  return c.json(await db.select().from(customers));
+});
+app.get("/orders", async (c) => {
+  const db = getDb();
+  return c.json(await db.select().from(orders));
+});
+app.get("/settings", async (c) => {
+  const db = getDb();
+  return c.json(await db.select().from(settings));
 });
 var src_default2 = app;
 
@@ -12125,7 +12175,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// .wrangler/tmp/bundle-7ESnjL/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-ODjVEy/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -12157,7 +12207,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-7ESnjL/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-ODjVEy/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

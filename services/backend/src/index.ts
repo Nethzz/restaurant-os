@@ -2,8 +2,14 @@
 // This file sets up the Hono server and defines the API routes for the RestaurantOS backend. It imports the `db` object from the `db` module to interact with the database and defines two routes: a root route that returns a welcome message and a `/menu-items` route that retrieves all menu items from the database and returns them as JSON.
 
 import { Hono } from 'hono';
-import { db } from './db';
-import { menuItems } from './db/schema';
+import { getDb } from './db';
+import {
+    menuItems,
+    menuCategories,
+    customers,
+    orders,
+    settings,
+} from './db/schema';
 
 const app = new Hono();
 
@@ -14,9 +20,28 @@ app.get('/', (c) => {
 });
 
 app.get('/menu-items', async (c) => {
-    const items = await db.select().from(menuItems);
+    const db = getDb();
+    return c.json(await db.select().from(menuItems));
+});
 
-    return c.json(items);
+app.get('/menu-categories', async (c) => {
+    const db = getDb();
+    return c.json(await db.select().from(menuCategories));
+});
+
+app.get('/customers', async (c) => {
+    const db = getDb();
+    return c.json(await db.select().from(customers));
+});
+
+app.get('/orders', async (c) => {
+    const db = getDb();
+    return c.json(await db.select().from(orders));
+});
+
+app.get('/settings', async (c) => {
+    const db = getDb();
+    return c.json(await db.select().from(settings));
 });
 
 export default app;

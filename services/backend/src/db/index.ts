@@ -6,6 +6,10 @@
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
 
-const client = postgres('postgresql://neethu@localhost:5432/restaurant_os');
+export function getDb() {
+    const client = postgres(
+        'postgresql://neethu@localhost:5432/restaurant_os'
+    );
 
-export const db = drizzle(client);
+    return drizzle(client);
+}
