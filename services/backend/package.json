@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/node": "^22.15.3",
     "drizzle-kit": "^0.31.10",
+    "orval": "^8.12.2",
     "typescript": "^6.0.3",
     "wrangler": "^4.93.1"
   }
