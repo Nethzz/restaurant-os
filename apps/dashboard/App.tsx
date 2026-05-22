@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { OrdersScreen } from './OrdersScreen';
 
 const queryClient = new QueryClient();
 
@@ -52,7 +53,8 @@ function MenuScreen() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <MenuScreen />
+      {/* <MenuScreen /> */}
+      <OrdersScreen />
     </QueryClientProvider>
   );
 }
