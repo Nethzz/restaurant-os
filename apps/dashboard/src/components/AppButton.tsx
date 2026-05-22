@@ -3,18 +3,28 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 type AppButtonProps = {
     title: string;
     onPress: () => void;
+    disabled?: boolean;
+    loading?: boolean;
+    accessibilityLabel?: string;
 };
 
-export function AppButton({ title, onPress }: AppButtonProps) {
+export function AppButton({ title, onPress, disabled = false, loading = false, accessibilityLabel }: AppButtonProps) {
     return (
         <Pressable
-            onPress={onPress}
+            onPress={disabled || loading ? undefined : onPress}
+            disabled={disabled || loading}
+            accessibilityLabel={accessibilityLabel || title}
             style={({ pressed }) => [
                 styles.button,
-                pressed && styles.buttonPressed,
+                pressed && !disabled && !loading && styles.buttonPressed,
+                (disabled || loading) && styles.buttonDisabled,
             ]}
         >
-            <Text style={styles.text}>{title}</Text>
+            {loading ? (
+                <Text style={styles.text}>...</Text>
+            ) : (
+                <Text style={styles.text}>{title}</Text>
+            )}
         </Pressable>
     );
 }
@@ -38,6 +48,11 @@ const styles = StyleSheet.create({
     buttonPressed: {
         backgroundColor: '#1e40af',
         opacity: 0.85,
+    },
+    buttonDisabled: {
+        backgroundColor: '#a5b4fc',
+        opacity: 0.6,
+        shadowOpacity: 0.05,
     },
     text: {
         color: '#fff',

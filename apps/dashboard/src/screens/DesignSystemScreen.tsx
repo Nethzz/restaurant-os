@@ -72,35 +72,77 @@ export function DesignSystemScreen() {
             {/* Colors */}
             <Card>
                 <Text style={styles.sectionTitle}>Color Tokens</Text>
-
                 <View style={styles.colorRow}>
-                    <View
-                        style={[
-                            styles.colorBox,
-                            { backgroundColor: '#2563eb' },
-                        ]}
-                    />
+                    <View style={[styles.colorBox, { backgroundColor: '#2563eb' }]} />
                     <Text>Primary Blue</Text>
                 </View>
-
                 <View style={styles.colorRow}>
-                    <View
-                        style={[
-                            styles.colorBox,
-                            { backgroundColor: '#16a34a' },
-                        ]}
-                    />
+                    <View style={[styles.colorBox, { backgroundColor: '#16a34a' }]} />
                     <Text>Success Green</Text>
                 </View>
-
                 <View style={styles.colorRow}>
-                    <View
-                        style={[
-                            styles.colorBox,
-                            { backgroundColor: '#dc2626' },
-                        ]}
-                    />
+                    <View style={[styles.colorBox, { backgroundColor: '#dc2626' }]} />
                     <Text>Error Red</Text>
+                </View>
+                <View style={styles.colorRow}>
+                    <View style={[styles.colorBox, { backgroundColor: '#facc15' }]} />
+                    <Text>Warning Yellow</Text>
+                </View>
+                <View style={styles.colorRow}>
+                    <View style={[styles.colorBox, { backgroundColor: '#f3f4f6', borderWidth: 1, borderColor: '#e5e7eb' }]} />
+                    <Text>Background</Text>
+                </View>
+                <View style={styles.colorRow}>
+                    <View style={[styles.colorBox, { backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb' }]} />
+                    <Text>Surface</Text>
+                </View>
+            </Card>
+
+            {/* Spacing Tokens */}
+            <Card>
+                <Text style={styles.sectionTitle}>Spacing Scale</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginBottom: 8 }}>
+                    {[0, 4, 8, 12, 16, 20, 24, 32, 40].map((s, i) => (
+                        <View key={i} style={{ width: s, height: 16, backgroundColor: '#2563eb', marginRight: 8, borderRadius: 4 }} />
+                    ))}
+                </View>
+                <Text style={styles.bodyText}>0, 4, 8, 12, 16, 20, 24, 32, 40</Text>
+            </Card>
+
+            {/* Radius Tokens */}
+            <Card>
+                <Text style={styles.sectionTitle}>Radius Tokens</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                    {[0, 4, 8, 12, 16].map((r, i) => (
+                        <View key={i} style={{ width: 32, height: 32, backgroundColor: '#f59e42', borderRadius: r, marginRight: 8 }} />
+                    ))}
+                </View>
+                <Text style={styles.bodyText}>0, 4, 8, 12, 16</Text>
+            </Card>
+
+            {/* Shadow/Elevation Tokens */}
+            <Card>
+                <Text style={styles.sectionTitle}>Shadow/Elevation</Text>
+                <View style={{ width: 64, height: 32, backgroundColor: '#fff', borderRadius: 8, marginVertical: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 4 }} />
+                <Text style={styles.bodyText}>Subtle shadow for surfaces and cards</Text>
+            </Card>
+
+            {/* Table/List Demo */}
+            <Card>
+                <Text style={styles.sectionTitle}>Table/List Demo</Text>
+                <View style={{ borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
+                    <View style={{ flexDirection: 'row', backgroundColor: '#f3f4f6' }}>
+                        <Text style={{ flex: 1, fontWeight: '700', padding: 8 }}>Name</Text>
+                        <Text style={{ flex: 1, fontWeight: '700', padding: 8 }}>Status</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: '#e5e7eb' }}>
+                        <Text style={{ flex: 1, padding: 8 }}>Margherita Pizza</Text>
+                        <Text style={{ flex: 1, padding: 8 }}><Badge label="AVAILABLE" /></Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: '#e5e7eb' }}>
+                        <Text style={{ flex: 1, padding: 8 }}>Veggie Burger</Text>
+                        <Text style={{ flex: 1, padding: 8 }}><Badge label="OUT OF STOCK" /></Text>
+                    </View>
                 </View>
             </Card>
 
