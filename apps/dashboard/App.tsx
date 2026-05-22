@@ -19,15 +19,23 @@ function Dashboard() {
   >('home');
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f3f4f6' }}>
       <View
         style={{
           flexDirection: 'row',
-          justifyContent: 'space-around',
-          paddingVertical: 10,
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          margin: 16,
+          padding: 10,
+          borderRadius: 16,
+          backgroundColor: '#fff',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
+          elevation: 4,
         }}
       >
-
         <AppButton title="Home" onPress={() => setScreen('home')} />
         <AppButton title="Menu" onPress={() => setScreen('menu')} />
         <AppButton title="Orders" onPress={() => setScreen('orders')} />
@@ -36,13 +44,14 @@ function Dashboard() {
         <AppButton title="Design" onPress={() => setScreen('design')} />
       </View>
 
-      {screen === 'menu' && <MenuScreen />}
-      {screen === 'orders' && <OrdersScreen />}
-      {screen === 'customers' && <CustomersScreen />}
-      {screen === 'home' && <HomeScreen />}
-      {screen === 'settings' && <SettingsScreen />}
-      {screen === 'design' && <DesignSystemScreen />}
-
+      <View style={{ flex: 1, marginHorizontal: 8, marginTop: 8 }}>
+        {screen === 'menu' && <MenuScreen />}
+        {screen === 'orders' && <OrdersScreen />}
+        {screen === 'customers' && <CustomersScreen />}
+        {screen === 'home' && <HomeScreen />}
+        {screen === 'settings' && <SettingsScreen />}
+        {screen === 'design' && <DesignSystemScreen />}
+      </View>
     </SafeAreaView>
   );
 }
