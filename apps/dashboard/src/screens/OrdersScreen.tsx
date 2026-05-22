@@ -1,6 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { Badge } from '../components/Badge';
+import { Card } from '../components/Card';
+import { EmptyState } from '../components/EmptyState';
+import { LoadingState } from '../components/LoadingState';
+
 export function OrdersScreen() {
     const { data, isLoading, error } = useQuery({
         queryKey: ['orders'],
@@ -11,11 +16,7 @@ export function OrdersScreen() {
     });
 
     if (isLoading) {
-        return (
-            <View style={styles.container}>
-                <Text>Loading orders...</Text>
-            </View>
-        );
+        return <LoadingState />;
     }
 
     if (error) {
@@ -26,6 +27,10 @@ export function OrdersScreen() {
         );
     }
 
+    if (!data?.length) {
+        return <EmptyState message="No orders found" />;
+    }
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Orders 📦</Text>
@@ -34,11 +39,13 @@ export function OrdersScreen() {
                 data={data}
                 keyExtractor={(item: any) => item.id.toString()}
                 renderItem={({ item }: any) => (
-                    <View style={styles.card}>
+                    <Card>
                         <Text>Order #{item.id}</Text>
-                        <Text>Status: {item.status}</Text>
-                        <Text>Total: €{item.total}</Text>
-                    </View>
+
+                        <Badge label={item.status} />
+
+                        <Text style={styles.total}>Total: €{item.total}</Text>
+                    </Card>
                 )}
             />
         </View>
@@ -49,17 +56,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+        backgroundColor: '#fff',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
     },
-    card: {
-        padding: 16,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
+    total: {
+        marginTop: 8,
     },
 });

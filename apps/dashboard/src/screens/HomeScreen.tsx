@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
 export function HomeScreen() {
     const { data: orders = [] } = useQuery({
@@ -24,7 +24,11 @@ export function HomeScreen() {
     );
 
     return (
-        <View style={styles.container}>
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={{ paddingBottom: 40 }}
+            showsVerticalScrollIndicator={false}
+        >
             <Text style={styles.title}>Dashboard 📊</Text>
 
             <View style={styles.card}>
@@ -41,7 +45,7 @@ export function HomeScreen() {
                 <Text style={styles.label}>Total Revenue</Text>
                 <Text style={styles.value}>€{totalRevenue.toFixed(2)}</Text>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 

@@ -1,47 +1,118 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import {
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from 'react-native';
+
+import { AppButton } from '../components/AppButton';
+import { AppModal } from '../components/AppModal';
+import { Card } from '../components/Card';
+import { Badge } from '../components/Badge';
 
 export function DesignSystemScreen() {
+    const [modalVisible, setModalVisible] = useState(false);
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Design System 🎨</Text>
+        <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.content}
+        >
+            <Text style={styles.pageTitle}>Design System 🎨</Text>
 
-            <Text style={styles.heading}>Heading Large</Text>
-            <Text style={styles.subheading}>Heading Medium</Text>
-            <Text style={styles.body}>
-                This is an example of body text used throughout the application.
-            </Text>
+            {/* Typography */}
+            <Card>
+                <Text style={styles.sectionTitle}>Typography</Text>
 
-            <View style={styles.section}>
+                <Text style={styles.headingLarge}>Heading Large</Text>
+
+                <Text style={styles.headingMedium}>Heading Medium</Text>
+
+                <Text style={styles.bodyText}>
+                    This is body text used across the application for descriptions and
+                    content.
+                </Text>
+            </Card>
+
+            {/* Buttons */}
+            <Card>
                 <Text style={styles.sectionTitle}>Buttons</Text>
-                <Button title="Primary Button" onPress={() => { }} />
-            </View>
 
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Card</Text>
-                <View style={styles.card}>
-                    <Text>Example Card Component</Text>
+                <AppButton
+                    title="Open Modal"
+                    onPress={() => setModalVisible(true)}
+                />
+            </Card>
+
+            {/* Status Badges */}
+            <Card>
+                <Text style={styles.sectionTitle}>Status Badges</Text>
+
+                <View style={styles.row}>
+                    <Badge label="PENDING" />
+                    <Badge label="COMPLETED" />
+                    <Badge label="CANCELLED" />
                 </View>
-            </View>
+            </Card>
 
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Colors</Text>
+            {/* Card Example */}
+            <Card>
+                <Text style={styles.sectionTitle}>Card Component</Text>
+
+                <Text style={styles.bodyText}>
+                    Reusable card surface used across Orders, Customers, Home and
+                    Settings.
+                </Text>
+            </Card>
+
+            {/* Colors */}
+            <Card>
+                <Text style={styles.sectionTitle}>Color Tokens</Text>
 
                 <View style={styles.colorRow}>
-                    <View style={[styles.colorBox, { backgroundColor: '#2563eb' }]} />
+                    <View
+                        style={[
+                            styles.colorBox,
+                            { backgroundColor: '#2563eb' },
+                        ]}
+                    />
                     <Text>Primary Blue</Text>
                 </View>
 
                 <View style={styles.colorRow}>
-                    <View style={[styles.colorBox, { backgroundColor: '#16a34a' }]} />
+                    <View
+                        style={[
+                            styles.colorBox,
+                            { backgroundColor: '#16a34a' },
+                        ]}
+                    />
                     <Text>Success Green</Text>
                 </View>
 
                 <View style={styles.colorRow}>
-                    <View style={[styles.colorBox, { backgroundColor: '#dc2626' }]} />
+                    <View
+                        style={[
+                            styles.colorBox,
+                            { backgroundColor: '#dc2626' },
+                        ]}
+                    />
                     <Text>Error Red</Text>
                 </View>
-            </View>
-        </View>
+            </Card>
+
+            {/* Modal */}
+            <AppModal
+                visible={modalVisible}
+                title="Example Modal"
+                onClose={() => setModalVisible(false)}
+            >
+                <Text style={styles.bodyText}>
+                    This modal demonstrates a reusable dialog component.
+                </Text>
+            </AppModal>
+        </ScrollView>
     );
 }
 
@@ -49,48 +120,58 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#f8fafc',
     },
-    title: {
-        fontSize: 28,
+    content: {
+        paddingBottom: 40,
+    },
+
+    pageTitle: {
+        fontSize: 30,
         fontWeight: 'bold',
-        marginBottom: 24,
+        marginBottom: 20,
     },
-    heading: {
+
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        marginBottom: 12,
+    },
+
+    headingLarge: {
         fontSize: 24,
         fontWeight: 'bold',
+        marginBottom: 8,
     },
-    subheading: {
+
+    headingMedium: {
         fontSize: 18,
         fontWeight: '600',
-        marginTop: 10,
+        marginBottom: 8,
     },
-    body: {
-        marginTop: 8,
+
+    bodyText: {
         fontSize: 14,
+        lineHeight: 20,
+        color: '#374151',
     },
-    section: {
-        marginTop: 24,
+
+    row: {
+        flexDirection: 'row',
+        gap: 8,
+        flexWrap: 'wrap',
     },
-    sectionTitle: {
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    card: {
-        padding: 20,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 10,
-    },
+
     colorRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 12,
     },
+
     colorBox: {
         width: 24,
         height: 24,
-        marginRight: 10,
-        borderRadius: 4,
+        borderRadius: 6,
+        marginRight: 12,
     },
 });

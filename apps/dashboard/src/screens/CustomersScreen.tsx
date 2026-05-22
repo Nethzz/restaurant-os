@@ -1,6 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { Card } from '../components/Card';
+import { EmptyState } from '../components/EmptyState';
+import { LoadingState } from '../components/LoadingState';
+
 export function CustomersScreen() {
     const { data, isLoading, error } = useQuery({
         queryKey: ['customers'],
@@ -11,11 +15,7 @@ export function CustomersScreen() {
     });
 
     if (isLoading) {
-        return (
-            <View style={styles.container}>
-                <Text>Loading customers...</Text>
-            </View>
-        );
+        return <LoadingState />;
     }
 
     if (error) {
@@ -26,6 +26,10 @@ export function CustomersScreen() {
         );
     }
 
+    if (!data?.length) {
+        return <EmptyState message="No customers found" />;
+    }
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Customers 👥</Text>
@@ -34,10 +38,10 @@ export function CustomersScreen() {
                 data={data}
                 keyExtractor={(item: any) => item.id.toString()}
                 renderItem={({ item }: any) => (
-                    <View style={styles.card}>
-                        <Text>{item.name}</Text>
+                    <Card>
+                        <Text style={styles.name}>{item.name}</Text>
                         <Text>{item.email}</Text>
-                    </View>
+                    </Card>
                 )}
             />
         </View>
@@ -48,17 +52,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+        backgroundColor: '#fff',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
     },
-    card: {
-        padding: 16,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
+    name: {
+        fontWeight: '600',
+        marginBottom: 4,
     },
 });
