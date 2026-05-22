@@ -1,85 +1,43 @@
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { StatusBar } from 'expo-status-bar';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { OrdersScreen } from './OrdersScreen';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
+import { Button, SafeAreaView, View } from 'react-native';
+
+import { MenuScreen } from './src/screens/MenuScreen';
+import { OrdersScreen } from './src/screens/OrdersScreen';
+import { CustomersScreen } from './src/screens/CustomersScreen';
 
 const queryClient = new QueryClient();
 
-function MenuScreen() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['menu-items'],
-    queryFn: async () => {
-      const response = await fetch('http://localhost:8787/menu-items');
-      return response.json();
-    },
-  });
-
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading menu...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text>Error loading menu items</Text>
-      </View>
-    );
-  }
+function Dashboard() {
+  const [screen, setScreen] = useState<'menu' | 'orders' | 'customers'>(
+    'menu'
+  );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Restaurant Menu 🍕</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          paddingVertical: 10,
+        }}
+      >
+        <Button title="Menu" onPress={() => setScreen('menu')} />
+        <Button title="Orders" onPress={() => setScreen('orders')} />
+        <Button title="Customers" onPress={() => setScreen('customers')} />
+      </View>
 
-      <FlatList
-        data={data}
-        keyExtractor={(item: any) => item.id.toString()}
-        renderItem={({ item }: any) => (
-          <View style={styles.card}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text>€{item.price}</Text>
-          </View>
-        )}
-      />
-
-      <StatusBar style="auto" />
-    </View>
+      {screen === 'menu' && <MenuScreen />}
+      {screen === 'orders' && <OrdersScreen />}
+      {screen === 'customers' && <CustomersScreen />}
+    </SafeAreaView>
   );
 }
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      {/* <MenuScreen /> */}
-      <OrdersScreen />
+      <Dashboard />
     </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  card: {
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
