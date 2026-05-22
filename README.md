@@ -1,35 +1,55 @@
 # RestaurantOS
 
-RestaurantOS is a restaurant management dashboard built with a modern TypeScript monorepo architecture using Turborepo, Expo, Hono, PostgreSQL, Drizzle ORM, OpenAPI, and React Query.
+RestaurantOS is a full-stack restaurant operations dashboard built with a modern TypeScript monorepo architecture using Turborepo, Expo, Hono, PostgreSQL, Drizzle ORM, OpenAPI, Orval, and React Query.
+
+The project demonstrates a contract-first architecture where API contracts are generated from the backend schema and shared across the application.
+
+---
 
 ## Overview
 
-The project provides a dashboard for restaurant operations management, including:
+RestaurantOS provides a centralized dashboard for restaurant management operations, including:
 
-- Menu management
 - Order management
-- Customer management
-- Restaurant settings
+- Menu management
+- Customer relationship management (CRM)
+- Restaurant settings management
+- Dashboard KPIs and analytics
 - Reusable design system components
+
+---
 
 ## Architecture
 
-```
+```text
 restaurant-os
 ├── apps
-│   └── dashboard          # Expo React Native dashboard
+│   └── dashboard
+│       └── Expo + React Native Web dashboard
 │
 ├── services
-│   └── backend            # Hono API + Drizzle ORM
+│   └── backend
+│       └── Hono API + Drizzle ORM + PostgreSQL
 │
 ├── packages
-│   ├── api-client         # Orval generated API client
-│   ├── shared             # Shared utilities
-│   ├── types              # Shared types
-│   └── ui                 # Shared UI package
+│   ├── api-client
+│   │   └── Orval generated API client
+│   │
+│   ├── shared
+│   │   └── Shared utilities
+│   │
+│   ├── types
+│   │   └── Shared types
+│   │
+│   └── ui
+│       └── Shared UI components
+│
+└── turbo.json
 ```
 
-## Tech Stack
+---
+
+## Technology Stack
 
 ### Frontend
 
@@ -45,41 +65,56 @@ restaurant-os
 - Drizzle ORM
 - drizzle-zod
 
-### API
+### API & Contracts
 
 - OpenAPI
-- Orval
+- Orval-generated API client
 
 ### Monorepo
 
 - Turborepo
 - PNPM Workspaces
 
+---
+
 ## Features
+
+### Dashboard
+
+- Total Orders KPI
+- Total Customers KPI
+- Total Revenue KPI
 
 ### Orders
 
 - View orders
-- Create orders
+- Create new orders
 - Update order status
-- Status badges
+- Order status badges
+- Order detail information
 
 ### Menu
 
 - View menu items
 - Create menu items
+- Category-based menu organization
 
-### Customers
+### CRM (Customers)
 
-- View customers
+- Customer list
+- Order count per customer
+- Customer total spend
+- Recent customer orders
 
 ### Settings
 
 - View restaurant settings
+- Update preparation time
+- Enable/disable auto-accept orders
 
 ### Design System
 
-Reusable UI components:
+Reusable components include:
 
 - AppButton
 - AppInput
@@ -90,11 +125,13 @@ Reusable UI components:
 - LoadingState
 - EmptyState
 
+---
+
 ## API Endpoints
 
 ### Menu
 
-```
+```http
 GET    /menu-items
 POST   /menu-items
 
@@ -103,7 +140,7 @@ GET    /menu-categories
 
 ### Orders
 
-```
+```http
 GET    /orders
 POST   /orders
 PATCH  /orders/{id}/status
@@ -111,53 +148,20 @@ PATCH  /orders/{id}/status
 
 ### Customers
 
-```
+```http
 GET    /customers
 ```
 
 ### Settings
 
-```
+```http
 GET    /settings
+PATCH  /settings
 ```
 
-## Running the Project
+---
 
-### Install dependencies
-
-```bash
-pnpm install
-```
-
-### Start backend
-
-```bash
-cd services/backend
-pnpm dev
-```
-
-Backend runs on:
-
-```
-http://localhost:8787
-```
-
-### Start dashboard
-
-```bash
-cd apps/dashboard
-pnpm start
-```
-
-### OpenAPI Documentation
-
-```
-http://localhost:8787/openapi.json
-```
-
-## Database
-
-The backend uses PostgreSQL with Drizzle ORM.
+## Database Model
 
 Main entities:
 
@@ -165,35 +169,164 @@ Main entities:
 - Menu Items
 - Customers
 - Orders
+- Order Items
 - Settings
 
-## Reusable Components
+---
 
-The dashboard follows a reusable component architecture.
+## Contract-First Architecture
 
-Examples:
+The project follows:
 
-- Modal dialogs
-- Form inputs
-- Buttons
-- Cards
-- Badges
-- Empty states
-- Loading states
+```text
+Drizzle Schema
+      ↓
+drizzle-zod
+      ↓
+Hono OpenAPI Routes
+      ↓
+OpenAPI Specification
+      ↓
+Orval Code Generation
+      ↓
+Frontend API Client
+```
+
+Benefits:
+
+- Single source of truth
+- Shared contracts
+- End-to-end type safety
+- Reduced API drift
+
+---
+
+## Running the Project
+
+### Install Dependencies
+
+```bash
+pnpm install
+```
+
+### Start Dashboard
+
+```bash
+pnpm dev:dashboard
+```
+
+### Start Backend
+
+```bash
+pnpm dev:backend
+```
+
+Backend URL:
+
+```text
+http://localhost:8787
+```
+
+### Generate API Client
+
+```bash
+pnpm gen:contract
+```
+
+### OpenAPI Documentation
+
+```text
+http://localhost:8787/openapi.json
+```
+
+---
+
+## Development Commands
+
+```bash
+pnpm dev:dashboard
+pnpm dev:backend
+pnpm gen:contract
+pnpm lint
+pnpm typecheck
+pnpm test
+```
+
+---
+
+## Testing
+
+Frontend component testing is implemented using:
+
+- Jest
+- React Native Testing Library
+
+Run tests:
+
+```bash
+pnpm test
+```
+
+---
+
+## Architecture Decisions
+
+### OpenAPI + Orval
+
+Using OpenAPI and Orval provides:
+
+- Shared API contracts
+- Automatic client generation
+- Strong typing across frontend and backend
+- Reduced maintenance overhead
+
+### Turborepo
+
+Provides:
+
+- Shared packages
+- Better code organization
+- Scalable monorepo architecture
+
+### React Query
+
+Provides:
+
+- Data caching
+- Loading state management
+- Automatic refetching
+- Improved API synchronization
+
+---
+
+## Tradeoffs
+
+This project was completed as a time-boxed technical assignment.
+
+Areas identified for future enhancement:
+
+- Additional frontend and backend test coverage
+- Advanced order workflow validation
+- Menu item editing and deletion
+- Expanded analytics dashboard
+- Enhanced business rule enforcement
+
+---
 
 ## Future Improvements
 
-- Edit menu items
-- Delete menu items
-- Advanced order workflows
 - Authentication and authorization
-- Dashboard analytics
-- Automated testing
-- CI/CD pipeline
+- Role-based access control
+- Advanced dashboard analytics
+- Notification system
+- More comprehensive automated testing
+- CI/CD integration
+
+---
 
 ## Author
 
-Neethu Vasundharan Sheeja
+**Neethu Vasundharan Sheeja**
 
 Senior Full Stack Developer
 

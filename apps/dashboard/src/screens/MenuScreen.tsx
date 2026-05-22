@@ -41,18 +41,24 @@ export function MenuScreen() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>
-                    Restaurant Menu 🍕
-                </Text>
+           <View style={styles.header}>
+    <Text style={styles.title}>
+        Restaurant Menu 🍕
+    </Text>
 
-                <AppButton
-                    title="+ Add Menu Item"
-                    onPress={() =>
-                        setModalVisible(true)
-                    }
-                />
-            </View>
+    <Text style={styles.subtitle}>
+        Manage menu items and pricing
+    </Text>
+
+    <View style={{ marginTop: 12 }}>
+        <AppButton
+            title="+ Add Menu Item"
+            onPress={() =>
+                setModalVisible(true)
+            }
+        />
+    </View>
+</View>
 
             {!data?.length ? (
                 <EmptyState message="No menu items found" />
@@ -63,21 +69,21 @@ export function MenuScreen() {
                         item.id.toString()
                     }
                     renderItem={({ item }: any) => (
-                        <Card>
-                            <Text style={styles.name}>
-                                {item.name}
-                            </Text>
+                     <Card style={styles.card}>
+    <View style={styles.row}>
+        <Text style={styles.name}>
+            🍽️ {item.name}
+        </Text>
 
-                            <Text>
-                                €{item.price}
-                            </Text>
+        <Text style={styles.price}>
+            €{item.price}
+        </Text>
+    </View>
 
-                            <Text>
-                                Category:{' '}
-                                {item.categoryId ??
-                                    'N/A'}
-                            </Text>
-                        </Card>
+    <Text style={styles.category}>
+        Category ID: {item.categoryId ?? 'N/A'}
+    </Text>
+</Card>
                     )}
                 />
             )}
@@ -99,19 +105,51 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#F3F4F6',
     },
+
     header: {
         marginBottom: 20,
     },
+
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 12,
+        fontSize: 30,
+        fontWeight: '800',
+        color: '#111827',
+        marginBottom: 6,
     },
+
+    subtitle: {
+        fontSize: 15,
+        color: '#6B7280',
+    },
+
+    card: {
+        marginBottom: 14,
+    },
+
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
     name: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 4,
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#111827',
+        flex: 1,
+    },
+
+    price: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#16A34A',
+    },
+
+    category: {
+        marginTop: 10,
+        fontSize: 14,
+        color: '#6B7280',
     },
 });

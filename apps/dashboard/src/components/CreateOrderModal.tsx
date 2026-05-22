@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Text } from 'react-native';
-
-import { postOrders } from '@repo/api-client';
+import { useQuery } from '@tanstack/react-query';
 
 import { AppButton } from './AppButton';
 import { AppInput } from './AppInput';
 import { AppModal } from './AppModal';
+import { AppSelect } from './AppSelect';
 import { API_URL } from '../config/api';
 
 type Props = {
@@ -23,12 +23,48 @@ export function CreateOrderModal({
     const [status, setStatus] = useState('PENDING');
     const [total, setTotal] = useState('');
 
+    const { data: customers = [] } = useQuery({
+        queryKey: ['customers'],
+        queryFn: async () => {
+            const response = await fetch(
+                `${API_URL}/customers`
+            );
+            return response.json();
+        },
+    });
+
+    const selectNextCustomer = () => {
+        if (!customers.length) return;
+
+        const currentIndex = customers.findIndex(
+            (customer: any) =>
+                customer.id.toString() === customerId
+        );
+
+        const nextIndex =
+            currentIndex === -1
+                ? 0
+                : (currentIndex + 1) %
+                  customers.length;
+
+        setCustomerId(
+            customers[nextIndex].id.toString()
+        );
+    };
+
+    const selectedCustomer =
+        customers.find(
+            (customer: any) =>
+                customer.id.toString() === customerId
+        )?.name || 'Select Customer';
+
     const handleCreate = async () => {
         try {
             await fetch(`${API_URL}/orders`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type':
+                        'application/json',
                 },
                 body: JSON.stringify({
                     customerId: customerId
@@ -44,6 +80,7 @@ export function CreateOrderModal({
             setTotal('');
 
             await onCreated?.();
+
             onClose();
         } catch (error) {
             console.error(error);
@@ -56,12 +93,29 @@ export function CreateOrderModal({
             title="Create Order"
             onClose={onClose}
         >
-            <AppInput
-                label="Customer ID"
-                value={customerId}
-                onChangeText={setCustomerId}
-                placeholder="1"
+            <Text
+                style={{
+                    marginBottom: 6,
+                    fontWeight: '600',
+                }}
+            >
+                Customer
+            </Text>
+
+            <AppSelect
+                value={selectedCustomer}
+                onPress={selectNextCustomer}
             />
+
+            <Text
+                style={{
+                    marginBottom: 12,
+                    color: '#6b7280',
+                    fontSize: 13,
+                }}
+            >
+                Tap to change customer
+            </Text>
 
             <AppInput
                 label="Status"
@@ -77,8 +131,13 @@ export function CreateOrderModal({
                 placeholder="19.99"
             />
 
-            <Text style={{ marginBottom: 12 }}>
-                Example: customer=1, total=19.99
+            <Text
+                style={{
+                    marginBottom: 12,
+                    color: '#6b7280',
+                }}
+            >
+                Example total: 19.99
             </Text>
 
             <AppButton
