@@ -1,159 +1,200 @@
-# Turborepo starter
+# RestaurantOS
 
-This Turborepo starter is maintained by the Turborepo core team.
+RestaurantOS is a restaurant management dashboard built with a modern TypeScript monorepo architecture using Turborepo, Expo, Hono, PostgreSQL, Drizzle ORM, OpenAPI, and React Query.
 
-## Using this example
+## Overview
 
-Run the following command:
+The project provides a dashboard for restaurant operations management, including:
 
-```sh
-npx create-turbo@latest
+- Menu management
+- Order management
+- Customer management
+- Restaurant settings
+- Reusable design system components
+
+## Architecture
+
+```
+restaurant-os
+├── apps
+│   └── dashboard          # Expo React Native dashboard
+│
+├── services
+│   └── backend            # Hono API + Drizzle ORM
+│
+├── packages
+│   ├── api-client         # Orval generated API client
+│   ├── shared             # Shared utilities
+│   ├── types              # Shared types
+│   └── ui                 # Shared UI package
 ```
 
-## What's inside?
+## Tech Stack
 
-This Turborepo includes the following packages/apps:
+### Frontend
 
-### Apps and Packages
+- React Native
+- Expo
+- TypeScript
+- React Query
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Backend
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+- Hono
+- PostgreSQL
+- Drizzle ORM
+- drizzle-zod
 
-### Utilities
+### API
 
-This Turborepo has some additional tools already setup for you:
+- OpenAPI
+- Orval
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### Monorepo
 
-### Build
+- Turborepo
+- PNPM Workspaces
 
-To build all apps and packages, run the following command:
+## Features
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+### Orders
 
-```sh
-cd my-turborepo
-turbo build
+- View orders
+- Create orders
+- Update order status
+- Status badges
+
+### Menu
+
+- View menu items
+- Create menu items
+
+### Customers
+
+- View customers
+
+### Settings
+
+- View restaurant settings
+
+### Design System
+
+Reusable UI components:
+
+- AppButton
+- AppInput
+- AppSelect
+- AppModal
+- Card
+- Badge
+- LoadingState
+- EmptyState
+
+## API Endpoints
+
+### Menu
+
+```
+GET    /menu-items
+POST   /menu-items
+
+GET    /menu-categories
 ```
 
-Without global `turbo`, use your package manager:
+### Orders
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+```
+GET    /orders
+POST   /orders
+PATCH  /orders/{id}/status
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Customers
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+```
+GET    /customers
 ```
 
-Without global `turbo`:
+### Settings
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```
+GET    /settings
 ```
 
-### Develop
+## Running the Project
 
-To develop all apps and packages, run the following command:
+### Install dependencies
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+pnpm install
 ```
 
-Without global `turbo`, use your package manager:
+### Start backend
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+```bash
+cd services/backend
+pnpm dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Backend runs on:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+```
+http://localhost:8787
 ```
 
-Without global `turbo`:
+### Start dashboard
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+cd apps/dashboard
+pnpm start
 ```
 
-### Remote Caching
+### OpenAPI Documentation
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
+```
+http://localhost:8787/openapi.json
 ```
 
-Without global `turbo`, use your package manager:
+## Database
 
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
+The backend uses PostgreSQL with Drizzle ORM.
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Main entities:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+- Menu Categories
+- Menu Items
+- Customers
+- Orders
+- Settings
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Reusable Components
 
-```sh
-turbo link
-```
+The dashboard follows a reusable component architecture.
 
-Without global `turbo`:
+Examples:
 
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
+- Modal dialogs
+- Form inputs
+- Buttons
+- Cards
+- Badges
+- Empty states
+- Loading states
 
-## Useful Links
+## Future Improvements
 
-Learn more about the power of Turborepo:
+- Edit menu items
+- Delete menu items
+- Advanced order workflows
+- Authentication and authorization
+- Dashboard analytics
+- Automated testing
+- CI/CD pipeline
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+## Author
+
+Neethu Vasundharan Sheeja
+
+Senior Full Stack Developer
+
+France
