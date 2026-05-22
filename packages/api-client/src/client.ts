@@ -14,6 +14,14 @@ export type GetMenuItems200Item = {
   available: boolean | null;
 };
 
+export type PostMenuItemsBody = {
+  /** @nullable */
+  categoryId: number | null;
+  name: string;
+  price: string;
+  available: boolean;
+};
+
 export type GetMenuCategories200Item = {
   id: number;
   name: string;
@@ -49,6 +57,11 @@ export type GetSettings200Item = {
   prepTimeMinutes: number | null;
   /** @nullable */
   autoAcceptOrders: boolean | null;
+};
+
+export type PatchSettingsBody = {
+  prepTimeMinutes: number;
+  autoAcceptOrders: boolean;
 };
 
 export type PatchOrdersIdStatusBodyStatus = typeof PatchOrdersIdStatusBodyStatus[keyof typeof PatchOrdersIdStatusBodyStatus];
@@ -100,6 +113,46 @@ export const getMenuItems = async ( options?: RequestInit): Promise<getMenuItems
 
   const data: getMenuItemsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getMenuItemsResponse
+}
+
+
+
+export type postMenuItemsResponse201 = {
+  data: void
+  status: 201
+}
+
+export type postMenuItemsResponseSuccess = (postMenuItemsResponse201) & {
+  headers: Headers;
+};
+;
+
+export type postMenuItemsResponse = (postMenuItemsResponseSuccess)
+
+export const getPostMenuItemsUrl = () => {
+
+
+
+
+  return `/menu-items`
+}
+
+export const postMenuItems = async (postMenuItemsBody?: PostMenuItemsBody, options?: RequestInit): Promise<postMenuItemsResponse> => {
+
+  const res = await fetch(getPostMenuItemsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(postMenuItemsBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: postMenuItemsResponse['data'] = body ? JSON.parse(body) : undefined
+  return { data, status: res.status, headers: res.headers } as postMenuItemsResponse
 }
 
 
@@ -300,6 +353,46 @@ export const getSettings = async ( options?: RequestInit): Promise<getSettingsRe
 
   const data: getSettingsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getSettingsResponse
+}
+
+
+
+export type patchSettingsResponse200 = {
+  data: void
+  status: 200
+}
+
+export type patchSettingsResponseSuccess = (patchSettingsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type patchSettingsResponse = (patchSettingsResponseSuccess)
+
+export const getPatchSettingsUrl = () => {
+
+
+
+
+  return `/settings`
+}
+
+export const patchSettings = async (patchSettingsBody?: PatchSettingsBody, options?: RequestInit): Promise<patchSettingsResponse> => {
+
+  const res = await fetch(getPatchSettingsUrl(),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(patchSettingsBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: patchSettingsResponse['data'] = body ? JSON.parse(body) : undefined
+  return { data, status: res.status, headers: res.headers } as patchSettingsResponse
 }
 
 

@@ -28,6 +28,7 @@ import {
 import {
     createMenuItemRoute,
 } from './routes/create-menu-item';
+import { updateSettingsRoute } from './routes/update-settings';
 
 import { cors } from 'hono/cors';
 const app = new OpenAPIHono();
@@ -127,6 +128,26 @@ app.openapi(
         return c.json(result[0], 201);
     }
 );
+
+app.openapi(updateSettingsRoute, async (c) => {
+    const db = getDb();
+
+    const body = await c.req.json();
+
+    await db
+        .update(settings)
+        .set({
+            prepTimeMinutes:
+                body.prepTimeMinutes,
+            autoAcceptOrders:
+                body.autoAcceptOrders,
+        })
+        .where(eq(settings.id, 1));
+
+    return c.json({
+        success: true,
+    });
+});
 
 app.doc('/openapi.json', {
     openapi: '3.0.0',
