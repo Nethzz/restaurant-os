@@ -1,21 +1,33 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { AppButton } from '../components/AppButton';
+import { Card } from '../components/Card';
+import { CreateMenuItemModal } from '../components/CreateMenuItemModal';
+import { EmptyState } from '../components/EmptyState';
+import { LoadingState } from '../components/LoadingState';
+
 export function MenuScreen() {
-    const { data, isLoading, error } = useQuery({
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const {
+        data,
+        isLoading,
+        error,
+        refetch,
+    } = useQuery({
         queryKey: ['menu-items'],
         queryFn: async () => {
-            const response = await fetch('http://localhost:8787/menu-items');
+            const response = await fetch(
+                'http://localhost:8787/menu-items'
+            );
             return response.json();
         },
     });
 
     if (isLoading) {
-        return (
-            <View style={styles.container}>
-                <Text>Loading menu...</Text>
-            </View>
-        );
+        return <LoadingState />;
     }
 
     if (error) {
@@ -28,17 +40,55 @@ export function MenuScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Restaurant Menu 🍕</Text>
+            <View style={styles.header}>
+                <Text style={styles.title}>
+                    Restaurant Menu 🍕
+                </Text>
 
-            <FlatList
-                data={data}
-                keyExtractor={(item: any) => item.id.toString()}
-                renderItem={({ item }: any) => (
-                    <View style={styles.card}>
-                        <Text style={styles.name}>{item.name}</Text>
-                        <Text>€{item.price}</Text>
-                    </View>
-                )}
+                <AppButton
+                    title="+ Add Menu Item"
+                    onPress={() =>
+                        setModalVisible(true)
+                    }
+                />
+            </View>
+
+            {!data?.length ? (
+                <EmptyState message="No menu items found" />
+            ) : (
+                <FlatList
+                    data={[...(data || [])]}
+                    keyExtractor={(item: any) =>
+                        item.id.toString()
+                    }
+                    renderItem={({ item }: any) => (
+                        <Card>
+                            <Text style={styles.name}>
+                                {item.name}
+                            </Text>
+
+                            <Text>
+                                €{item.price}
+                            </Text>
+
+                            <Text>
+                                Category:{' '}
+                                {item.categoryId ??
+                                    'N/A'}
+                            </Text>
+                        </Card>
+                    )}
+                />
+            )}
+
+            <CreateMenuItemModal
+                visible={modalVisible}
+                onClose={() =>
+                    setModalVisible(false)
+                }
+                onCreated={async () => {
+                    await refetch();
+                }}
             />
         </View>
     );
@@ -47,24 +97,20 @@ export function MenuScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 60,
-        paddingHorizontal: 20,
+        padding: 20,
         backgroundColor: '#fff',
+    },
+    header: {
+        marginBottom: 20,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    card: {
-        padding: 16,
         marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
     },
     name: {
         fontSize: 16,
         fontWeight: '600',
+        marginBottom: 4,
     },
 });

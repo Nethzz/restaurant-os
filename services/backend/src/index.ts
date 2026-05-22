@@ -25,6 +25,10 @@ import {
     updateOrderStatusRoute,
 } from './routes/update-order-status';
 
+import {
+    createMenuItemRoute,
+} from './routes/create-menu-item';
+
 import { cors } from 'hono/cors';
 const app = new OpenAPIHono();
 
@@ -100,6 +104,27 @@ app.openapi(
             .returning();
 
         return c.json(result[0]);
+    }
+);
+
+app.openapi(
+    createMenuItemRoute,
+    async (c) => {
+        const db = getDb();
+
+        const body = c.req.valid('json');
+
+        const result = await db
+            .insert(menuItems)
+            .values({
+                categoryId: body.categoryId,
+                name: body.name,
+                price: body.price,
+                available: body.available,
+            })
+            .returning();
+
+        return c.json(result[0], 201);
     }
 );
 
