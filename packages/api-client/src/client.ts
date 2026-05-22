@@ -36,6 +36,13 @@ export type GetOrders200Item = {
   createdAt: string | null;
 };
 
+export type PostOrdersBody = {
+  /** @nullable */
+  customerId: number | null;
+  status: string;
+  total: string;
+};
+
 export type GetSettings200Item = {
   id: number;
   /** @nullable */
@@ -200,6 +207,46 @@ export const getOrders = async ( options?: RequestInit): Promise<getOrdersRespon
 
   const data: getOrdersResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getOrdersResponse
+}
+
+
+
+export type postOrdersResponse201 = {
+  data: void
+  status: 201
+}
+
+export type postOrdersResponseSuccess = (postOrdersResponse201) & {
+  headers: Headers;
+};
+;
+
+export type postOrdersResponse = (postOrdersResponseSuccess)
+
+export const getPostOrdersUrl = () => {
+
+
+
+
+  return `/orders`
+}
+
+export const postOrders = async (postOrdersBody?: PostOrdersBody, options?: RequestInit): Promise<postOrdersResponse> => {
+
+  const res = await fetch(getPostOrdersUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(postOrdersBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: postOrdersResponse['data'] = body ? JSON.parse(body) : undefined
+  return { data, status: res.status, headers: res.headers } as postOrdersResponse
 }
 
 

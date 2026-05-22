@@ -17,6 +17,10 @@ import {
     getOrdersRoute,
     getSettingsRoute,
 } from './routes/routes';
+import {
+    createOrderRoute,
+} from './routes/create-order';
+
 import { cors } from 'hono/cors';
 const app = new OpenAPIHono();
 
@@ -56,6 +60,23 @@ app.openapi(getOrdersRoute, async (c) => {
 app.openapi(getSettingsRoute, async (c) => {
     const db = getDb();
     return c.json(await db.select().from(settings));
+});
+
+app.openapi(createOrderRoute, async (c) => {
+    const db = getDb();
+
+    const body = c.req.valid('json');
+
+    const result = await db
+        .insert(orders)
+        .values({
+            customerId: body.customerId,
+            status: body.status,
+            total: body.total,
+        })
+        .returning();
+
+    return c.json(result[0], 201);
 });
 
 app.doc('/openapi.json', {

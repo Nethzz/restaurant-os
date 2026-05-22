@@ -10,6 +10,8 @@ import { AppButton } from '../components/AppButton';
 import { AppModal } from '../components/AppModal';
 import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
+import { AppInput } from '../components/AppInput';
+import { AppSelect } from '../components/AppSelect';
 
 export function DesignSystemScreen() {
     const [modalVisible, setModalVisible] = useState(false);
@@ -100,6 +102,21 @@ export function DesignSystemScreen() {
                     />
                     <Text>Error Red</Text>
                 </View>
+            </Card>
+
+            {/* Form Controls */}
+            <Card>
+                <Text style={styles.sectionTitle}>Form Controls</Text>
+
+                <AppInput
+                    label="Restaurant Name"
+                    placeholder="Enter name"
+                />
+
+                <AppSelect
+                    value="Select Category"
+                    onPress={() => { }}
+                />
             </Card>
 
             {/* Modal */}
