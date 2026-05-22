@@ -1,13 +1,23 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { AppButton } from '../components/AppButton';
 import { Badge } from '../components/Badge';
 import { Card } from '../components/Card';
+import { CreateOrderModal } from '../components/CreateOrderModal';
 import { EmptyState } from '../components/EmptyState';
 import { LoadingState } from '../components/LoadingState';
 
 export function OrdersScreen() {
-    const { data, isLoading, error } = useQuery({
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const {
+        data,
+        isLoading,
+        error,
+        refetch,
+    } = useQuery({
         queryKey: ['orders'],
         queryFn: async () => {
             const response = await fetch('http://localhost:8787/orders');
@@ -27,26 +37,52 @@ export function OrdersScreen() {
         );
     }
 
-    if (!data?.length) {
-        return <EmptyState message="No orders found" />;
-    }
-
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Orders 📦</Text>
+            <View style={styles.header}>
+                <Text style={styles.title}>Orders 📦</Text>
 
-            <FlatList
-                data={data}
-                keyExtractor={(item: any) => item.id.toString()}
-                renderItem={({ item }: any) => (
-                    <Card>
-                        <Text>Order #{item.id}</Text>
+                <AppButton
+                    title="+ Create Order"
+                    onPress={() => setModalVisible(true)}
+                />
+            </View>
 
-                        <Badge label={item.status} />
+            {!data?.length ? (
+                <EmptyState message="No orders found" />
+            ) : (
+                <FlatList
+                    data={[...(data || [])]}
+                    keyExtractor={(item: any) =>
+                        item.id.toString()
+                    }
+                    renderItem={({ item }: any) => (
+                        <Card>
+                            <Text style={styles.orderTitle}>
+                                Order #{item.id}
+                            </Text>
 
-                        <Text style={styles.total}>Total: €{item.total}</Text>
-                    </Card>
-                )}
+                            <Badge label={item.status} />
+
+                            <Text style={styles.total}>
+                                Total: €{item.total}
+                            </Text>
+
+                            <Text>
+                                Customer ID:{' '}
+                                {item.customerId ?? 'N/A'}
+                            </Text>
+                        </Card>
+                    )}
+                />
+            )}
+
+            <CreateOrderModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onCreated={async () => {
+                    await refetch();
+                }}
             />
         </View>
     );
@@ -58,12 +94,20 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#fff',
     },
+    header: {
+        marginBottom: 20,
+    },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: 12,
+    },
+    orderTitle: {
+        fontWeight: '600',
+        marginBottom: 8,
     },
     total: {
         marginTop: 8,
+        marginBottom: 4,
     },
 });
