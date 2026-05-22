@@ -16,6 +16,7 @@ import { CreateOrderModal } from '../components/CreateOrderModal';
 import { EmptyState } from '../components/EmptyState';
 import { LoadingState } from '../components/LoadingState';
 import { OrderDetailsModal } from '../components/OrderDetailsModal';
+import { API_URL } from '../../api';
 
 export function OrdersScreen() {
     const [modalVisible, setModalVisible] =
@@ -40,7 +41,7 @@ export function OrdersScreen() {
         queryKey: ['orders'],
         queryFn: async () => {
             const response = await fetch(
-                'http://localhost:8787/orders'
+                `${API_URL}/orders`
             );
 
             return response.json();
@@ -72,7 +73,7 @@ export function OrdersScreen() {
     const markCompleted = async (id: number) => {
         try {
             await fetch(
-                `http://localhost:8787/orders/${id}/status`,
+                `${API_URL}/orders/${id}/status`,
                 {
                     method: 'PATCH',
                     headers: {

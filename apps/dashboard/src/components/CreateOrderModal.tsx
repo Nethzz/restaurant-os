@@ -6,6 +6,7 @@ import { postOrders } from '@repo/api-client';
 import { AppButton } from './AppButton';
 import { AppInput } from './AppInput';
 import { AppModal } from './AppModal';
+import { API_URL } from '../config/api';
 
 type Props = {
     visible: boolean;
@@ -24,7 +25,7 @@ export function CreateOrderModal({
 
     const handleCreate = async () => {
         try {
-            await fetch('http://localhost:8787/orders', {
+            await fetch(`${API_URL}/orders`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

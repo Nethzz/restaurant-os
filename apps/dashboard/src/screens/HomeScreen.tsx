@@ -2,12 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
 import { Card } from '../components/Card';
+import { API_URL } from '../config/api';
 
 export function HomeScreen() {
     const { data: orders = [] } = useQuery({
         queryKey: ['orders'],
         queryFn: async () => {
-            const response = await fetch('http://localhost:8787/orders');
+            const response = await fetch(`${API_URL}/orders`);
             return response.json();
         },
     });
@@ -15,7 +16,7 @@ export function HomeScreen() {
     const { data: customers = [] } = useQuery({
         queryKey: ['customers'],
         queryFn: async () => {
-            const response = await fetch('http://localhost:8787/customers');
+            const response = await fetch(`${API_URL}/customers`);
             return response.json();
         },
     });

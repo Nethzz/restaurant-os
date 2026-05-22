@@ -9,6 +9,7 @@ import {
 import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
 import { LoadingState } from '../components/LoadingState';
+import { API_URL } from '../config/api';
 
 export function CustomersScreen() {
     const {
@@ -19,7 +20,7 @@ export function CustomersScreen() {
         queryKey: ['customers'],
         queryFn: async () => {
             const response = await fetch(
-                'http://localhost:8787/customers'
+                `${API_URL}/customers`
             );
 
             return response.json();
@@ -30,7 +31,7 @@ export function CustomersScreen() {
         queryKey: ['orders'],
         queryFn: async () => {
             const response = await fetch(
-                'http://localhost:8787/orders'
+                `${API_URL}/orders`
             );
 
             return response.json();

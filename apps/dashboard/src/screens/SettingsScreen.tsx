@@ -12,6 +12,7 @@ import { AppButton } from '../components/AppButton';
 import { AppInput } from '../components/AppInput';
 import { Card } from '../components/Card';
 import { LoadingState } from '../components/LoadingState';
+import { API_URL } from '../config/api';
 
 export function SettingsScreen() {
     const {
@@ -22,7 +23,7 @@ export function SettingsScreen() {
         queryKey: ['settings'],
         queryFn: async () => {
             const response = await fetch(
-                'http://localhost:8787/settings'
+                `${API_URL}/settings`
             );
 
             return response.json();
@@ -63,7 +64,7 @@ export function SettingsScreen() {
             setMessage('');
 
             const response = await fetch(
-                'http://localhost:8787/settings',
+                `${API_URL}/settings`,
                 {
                     method: 'PATCH',
                     headers: {

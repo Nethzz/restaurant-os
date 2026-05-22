@@ -7,6 +7,7 @@ import { Card } from '../components/Card';
 import { CreateMenuItemModal } from '../components/CreateMenuItemModal';
 import { EmptyState } from '../components/EmptyState';
 import { LoadingState } from '../components/LoadingState';
+import { API_URL } from '../../api';
 
 export function MenuScreen() {
     const [modalVisible, setModalVisible] = useState(false);
@@ -20,7 +21,7 @@ export function MenuScreen() {
         queryKey: ['menu-items'],
         queryFn: async () => {
             const response = await fetch(
-                'http://localhost:8787/menu-items'
+                `${API_URL}/menu-items`
             );
             return response.json();
         },
