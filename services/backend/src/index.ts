@@ -20,6 +20,10 @@ import {
 import {
     createOrderRoute,
 } from './routes/create-order';
+import { eq } from 'drizzle-orm';
+import {
+    updateOrderStatusRoute,
+} from './routes/update-order-status';
 
 import { cors } from 'hono/cors';
 const app = new OpenAPIHono();
@@ -78,6 +82,26 @@ app.openapi(createOrderRoute, async (c) => {
 
     return c.json(result[0], 201);
 });
+
+app.openapi(
+    updateOrderStatusRoute,
+    async (c) => {
+        const db = getDb();
+
+        const { id } = c.req.valid('param');
+        const body = c.req.valid('json');
+
+        const result = await db
+            .update(orders)
+            .set({
+                status: body.status,
+            })
+            .where(eq(orders.id, Number(id)))
+            .returning();
+
+        return c.json(result[0]);
+    }
+);
 
 app.doc('/openapi.json', {
     openapi: '3.0.0',

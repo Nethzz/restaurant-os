@@ -51,6 +51,19 @@ export type GetSettings200Item = {
   autoAcceptOrders: boolean | null;
 };
 
+export type PatchOrdersIdStatusBodyStatus = typeof PatchOrdersIdStatusBodyStatus[keyof typeof PatchOrdersIdStatusBodyStatus];
+
+
+export const PatchOrdersIdStatusBodyStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type PatchOrdersIdStatusBody = {
+  status: PatchOrdersIdStatusBodyStatus;
+};
+
 export type getMenuItemsResponse200 = {
   data: GetMenuItems200Item[]
   status: 200
@@ -287,4 +300,45 @@ export const getSettings = async ( options?: RequestInit): Promise<getSettingsRe
 
   const data: getSettingsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getSettingsResponse
+}
+
+
+
+export type patchOrdersIdStatusResponse200 = {
+  data: void
+  status: 200
+}
+
+export type patchOrdersIdStatusResponseSuccess = (patchOrdersIdStatusResponse200) & {
+  headers: Headers;
+};
+;
+
+export type patchOrdersIdStatusResponse = (patchOrdersIdStatusResponseSuccess)
+
+export const getPatchOrdersIdStatusUrl = (id: string,) => {
+
+
+
+
+  return `/orders/${id}/status`
+}
+
+export const patchOrdersIdStatus = async (id: string,
+    patchOrdersIdStatusBody?: PatchOrdersIdStatusBody, options?: RequestInit): Promise<patchOrdersIdStatusResponse> => {
+
+  const res = await fetch(getPatchOrdersIdStatusUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(patchOrdersIdStatusBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: patchOrdersIdStatusResponse['data'] = body ? JSON.parse(body) : undefined
+  return { data, status: res.status, headers: res.headers } as patchOrdersIdStatusResponse
 }

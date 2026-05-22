@@ -20,10 +20,34 @@ export function OrdersScreen() {
     } = useQuery({
         queryKey: ['orders'],
         queryFn: async () => {
-            const response = await fetch('http://localhost:8787/orders');
+            const response = await fetch(
+                'http://localhost:8787/orders'
+            );
             return response.json();
         },
     });
+
+    const markCompleted = async (id: number) => {
+        try {
+            await fetch(
+                `http://localhost:8787/orders/${id}/status`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type':
+                            'application/json',
+                    },
+                    body: JSON.stringify({
+                        status: 'COMPLETED',
+                    }),
+                }
+            );
+
+            await refetch();
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     if (isLoading) {
         return <LoadingState />;
@@ -40,11 +64,15 @@ export function OrdersScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Orders 📦</Text>
+                <Text style={styles.title}>
+                    Orders 📦
+                </Text>
 
                 <AppButton
                     title="+ Create Order"
-                    onPress={() => setModalVisible(true)}
+                    onPress={() =>
+                        setModalVisible(true)
+                    }
                 />
             </View>
 
@@ -58,20 +86,48 @@ export function OrdersScreen() {
                     }
                     renderItem={({ item }: any) => (
                         <Card>
-                            <Text style={styles.orderTitle}>
+                            <Text
+                                style={
+                                    styles.orderTitle
+                                }
+                            >
                                 Order #{item.id}
                             </Text>
 
-                            <Badge label={item.status} />
+                            <Badge
+                                label={item.status}
+                            />
 
-                            <Text style={styles.total}>
-                                Total: €{item.total}
+                            <Text
+                                style={styles.total}
+                            >
+                                Total: €
+                                {item.total}
                             </Text>
 
                             <Text>
                                 Customer ID:{' '}
-                                {item.customerId ?? 'N/A'}
+                                {item.customerId ??
+                                    'N/A'}
                             </Text>
+
+                            {item.status !==
+                                'COMPLETED' && (
+                                    <View
+                                        style={{
+                                            marginTop: 10,
+                                        }}
+                                    >
+                                        <AppButton
+                                            title="Mark Completed"
+                                            onPress={() =>
+                                                markCompleted(
+                                                    item.id
+                                                )
+                                            }
+                                        />
+                                    </View>
+                                )}
                         </Card>
                     )}
                 />
@@ -79,7 +135,9 @@ export function OrdersScreen() {
 
             <CreateOrderModal
                 visible={modalVisible}
-                onClose={() => setModalVisible(false)}
+                onClose={() =>
+                    setModalVisible(false)
+                }
                 onCreated={async () => {
                     await refetch();
                 }}
