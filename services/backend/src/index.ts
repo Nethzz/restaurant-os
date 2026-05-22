@@ -11,8 +11,21 @@ import {
     settings,
 } from './db/schema';
 import { getMenuItemsRoute } from './routes/menu-items';
-
+import {
+    getMenuCategoriesRoute,
+    getCustomersRoute,
+    getOrdersRoute,
+    getSettingsRoute,
+} from './routes/routes';
+import { cors } from 'hono/cors';
 const app = new OpenAPIHono();
+
+app.use(
+    '*',
+    cors({
+        origin: '*',
+    })
+);
 
 app.get('/', (c) => {
     return c.json({
@@ -25,22 +38,22 @@ app.openapi(getMenuItemsRoute, async (c) => {
     return c.json(await db.select().from(menuItems));
 });
 
-app.get('/menu-categories', async (c) => {
+app.openapi(getMenuCategoriesRoute, async (c) => {
     const db = getDb();
     return c.json(await db.select().from(menuCategories));
 });
 
-app.get('/customers', async (c) => {
+app.openapi(getCustomersRoute, async (c) => {
     const db = getDb();
     return c.json(await db.select().from(customers));
 });
 
-app.get('/orders', async (c) => {
+app.openapi(getOrdersRoute, async (c) => {
     const db = getDb();
     return c.json(await db.select().from(orders));
 });
 
-app.get('/settings', async (c) => {
+app.openapi(getSettingsRoute, async (c) => {
     const db = getDb();
     return c.json(await db.select().from(settings));
 });

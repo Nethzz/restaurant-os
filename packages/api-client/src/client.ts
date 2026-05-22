@@ -14,6 +14,36 @@ export type GetMenuItems200Item = {
   available: boolean | null;
 };
 
+export type GetMenuCategories200Item = {
+  id: number;
+  name: string;
+};
+
+export type GetCustomers200Item = {
+  id: number;
+  name: string;
+  /** @nullable */
+  email: string | null;
+};
+
+export type GetOrders200Item = {
+  id: number;
+  /** @nullable */
+  customerId: number | null;
+  status: string;
+  total: string;
+  /** @nullable */
+  createdAt: string | null;
+};
+
+export type GetSettings200Item = {
+  id: number;
+  /** @nullable */
+  prepTimeMinutes: number | null;
+  /** @nullable */
+  autoAcceptOrders: boolean | null;
+};
+
 export type getMenuItemsResponse200 = {
   data: GetMenuItems200Item[]
   status: 200
@@ -50,4 +80,164 @@ export const getMenuItems = async ( options?: RequestInit): Promise<getMenuItems
 
   const data: getMenuItemsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getMenuItemsResponse
+}
+
+
+
+export type getMenuCategoriesResponse200 = {
+  data: GetMenuCategories200Item[]
+  status: 200
+}
+
+export type getMenuCategoriesResponseSuccess = (getMenuCategoriesResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getMenuCategoriesResponse = (getMenuCategoriesResponseSuccess)
+
+export const getGetMenuCategoriesUrl = () => {
+
+
+
+
+  return `/menu-categories`
+}
+
+export const getMenuCategories = async ( options?: RequestInit): Promise<getMenuCategoriesResponse> => {
+
+  const res = await fetch(getGetMenuCategoriesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getMenuCategoriesResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getMenuCategoriesResponse
+}
+
+
+
+export type getCustomersResponse200 = {
+  data: GetCustomers200Item[]
+  status: 200
+}
+
+export type getCustomersResponseSuccess = (getCustomersResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getCustomersResponse = (getCustomersResponseSuccess)
+
+export const getGetCustomersUrl = () => {
+
+
+
+
+  return `/customers`
+}
+
+export const getCustomers = async ( options?: RequestInit): Promise<getCustomersResponse> => {
+
+  const res = await fetch(getGetCustomersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getCustomersResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getCustomersResponse
+}
+
+
+
+export type getOrdersResponse200 = {
+  data: GetOrders200Item[]
+  status: 200
+}
+
+export type getOrdersResponseSuccess = (getOrdersResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getOrdersResponse = (getOrdersResponseSuccess)
+
+export const getGetOrdersUrl = () => {
+
+
+
+
+  return `/orders`
+}
+
+export const getOrders = async ( options?: RequestInit): Promise<getOrdersResponse> => {
+
+  const res = await fetch(getGetOrdersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getOrdersResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getOrdersResponse
+}
+
+
+
+export type getSettingsResponse200 = {
+  data: GetSettings200Item[]
+  status: 200
+}
+
+export type getSettingsResponseSuccess = (getSettingsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getSettingsResponse = (getSettingsResponseSuccess)
+
+export const getGetSettingsUrl = () => {
+
+
+
+
+  return `/settings`
+}
+
+export const getSettings = async ( options?: RequestInit): Promise<getSettingsResponse> => {
+
+  const res = await fetch(getGetSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getSettingsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getSettingsResponse
 }

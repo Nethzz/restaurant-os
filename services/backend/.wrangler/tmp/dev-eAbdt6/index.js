@@ -29479,8 +29479,187 @@ var getMenuItemsRoute = createRoute({
   }
 });
 
+// src/routes/routes.ts
+var getMenuCategoriesRoute = createRoute({
+  method: "get",
+  path: "/menu-categories",
+  tags: ["Menu"],
+  responses: {
+    200: {
+      description: "Menu categories",
+      content: {
+        "application/json": {
+          schema: external_exports.array(
+            external_exports.object({
+              id: external_exports.number(),
+              name: external_exports.string()
+            })
+          )
+        }
+      }
+    }
+  }
+});
+var getCustomersRoute = createRoute({
+  method: "get",
+  path: "/customers",
+  tags: ["Customers"],
+  responses: {
+    200: {
+      description: "Customers",
+      content: {
+        "application/json": {
+          schema: external_exports.array(
+            external_exports.object({
+              id: external_exports.number(),
+              name: external_exports.string(),
+              email: external_exports.string().nullable()
+            })
+          )
+        }
+      }
+    }
+  }
+});
+var getOrdersRoute = createRoute({
+  method: "get",
+  path: "/orders",
+  tags: ["Orders"],
+  responses: {
+    200: {
+      description: "Orders",
+      content: {
+        "application/json": {
+          schema: external_exports.array(
+            external_exports.object({
+              id: external_exports.number(),
+              customerId: external_exports.number().nullable(),
+              status: external_exports.string(),
+              total: external_exports.string(),
+              createdAt: external_exports.string().nullable()
+            })
+          )
+        }
+      }
+    }
+  }
+});
+var getSettingsRoute = createRoute({
+  method: "get",
+  path: "/settings",
+  tags: ["Settings"],
+  responses: {
+    200: {
+      description: "Settings",
+      content: {
+        "application/json": {
+          schema: external_exports.array(
+            external_exports.object({
+              id: external_exports.number(),
+              prepTimeMinutes: external_exports.number().nullable(),
+              autoAcceptOrders: external_exports.boolean().nullable()
+            })
+          )
+        }
+      }
+    }
+  }
+});
+
+// ../../node_modules/.pnpm/hono@4.12.21/node_modules/hono/dist/middleware/cors/index.js
+var cors = /* @__PURE__ */ __name((options) => {
+  const opts = {
+    origin: "*",
+    allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],
+    allowHeaders: [],
+    exposeHeaders: [],
+    ...options
+  };
+  const findAllowOrigin = ((optsOrigin) => {
+    if (typeof optsOrigin === "string") {
+      if (optsOrigin === "*") {
+        if (opts.credentials) {
+          return (origin) => origin || null;
+        }
+        return () => optsOrigin;
+      } else {
+        return (origin) => optsOrigin === origin ? origin : null;
+      }
+    } else if (typeof optsOrigin === "function") {
+      return optsOrigin;
+    } else {
+      return (origin) => optsOrigin.includes(origin) ? origin : null;
+    }
+  })(opts.origin);
+  const findAllowMethods = ((optsAllowMethods) => {
+    if (typeof optsAllowMethods === "function") {
+      return optsAllowMethods;
+    } else if (Array.isArray(optsAllowMethods)) {
+      return () => optsAllowMethods;
+    } else {
+      return () => [];
+    }
+  })(opts.allowMethods);
+  return /* @__PURE__ */ __name(async function cors2(c, next) {
+    function set2(key, value) {
+      c.res.headers.set(key, value);
+    }
+    __name(set2, "set");
+    const allowOrigin = await findAllowOrigin(c.req.header("origin") || "", c);
+    if (allowOrigin) {
+      set2("Access-Control-Allow-Origin", allowOrigin);
+    }
+    if (opts.credentials) {
+      set2("Access-Control-Allow-Credentials", "true");
+    }
+    if (opts.exposeHeaders?.length) {
+      set2("Access-Control-Expose-Headers", opts.exposeHeaders.join(","));
+    }
+    if (c.req.method === "OPTIONS") {
+      if (opts.origin !== "*" || opts.credentials) {
+        set2("Vary", "Origin");
+      }
+      if (opts.maxAge != null) {
+        set2("Access-Control-Max-Age", opts.maxAge.toString());
+      }
+      const allowMethods = await findAllowMethods(c.req.header("origin") || "", c);
+      if (allowMethods.length) {
+        set2("Access-Control-Allow-Methods", allowMethods.join(","));
+      }
+      let headers = opts.allowHeaders;
+      if (!headers?.length) {
+        const requestHeaders = c.req.header("Access-Control-Request-Headers");
+        if (requestHeaders) {
+          headers = requestHeaders.split(/\s*,\s*/);
+        }
+      }
+      if (headers?.length) {
+        set2("Access-Control-Allow-Headers", headers.join(","));
+        c.res.headers.append("Vary", "Access-Control-Request-Headers");
+      }
+      c.res.headers.delete("Content-Length");
+      c.res.headers.delete("Content-Type");
+      return new Response(null, {
+        headers: c.res.headers,
+        status: 204,
+        statusText: "No Content"
+      });
+    }
+    await next();
+    if (opts.origin !== "*" || opts.credentials) {
+      c.header("Vary", "Origin", { append: true });
+    }
+  }, "cors2");
+}, "cors");
+
 // src/index.ts
 var app = new OpenAPIHono();
+app.use(
+  "*",
+  cors({
+    origin: "*"
+  })
+);
 app.get("/", (c) => {
   return c.json({
     message: "RestaurantOS API"
@@ -29490,19 +29669,19 @@ app.openapi(getMenuItemsRoute, async (c) => {
   const db = getDb();
   return c.json(await db.select().from(menuItems));
 });
-app.get("/menu-categories", async (c) => {
+app.openapi(getMenuCategoriesRoute, async (c) => {
   const db = getDb();
   return c.json(await db.select().from(menuCategories));
 });
-app.get("/customers", async (c) => {
+app.openapi(getCustomersRoute, async (c) => {
   const db = getDb();
   return c.json(await db.select().from(customers));
 });
-app.get("/orders", async (c) => {
+app.openapi(getOrdersRoute, async (c) => {
   const db = getDb();
   return c.json(await db.select().from(orders));
 });
-app.get("/settings", async (c) => {
+app.openapi(getSettingsRoute, async (c) => {
   const db = getDb();
   return c.json(await db.select().from(settings));
 });
