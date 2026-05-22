@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
+import { Card } from '../components/Card';
+
 export function HomeScreen() {
     const { data: orders = [] } = useQuery({
         queryKey: ['orders'],
@@ -23,6 +25,10 @@ export function HomeScreen() {
         0
     );
 
+    const pendingOrders = orders.filter(
+        (order: any) => order.status === 'PENDING'
+    ).length;
+
     return (
         <ScrollView
             style={styles.container}
@@ -31,20 +37,27 @@ export function HomeScreen() {
         >
             <Text style={styles.title}>Dashboard 📊</Text>
 
-            <View style={styles.card}>
+            <Card>
                 <Text style={styles.label}>Total Orders</Text>
                 <Text style={styles.value}>{orders.length}</Text>
-            </View>
+            </Card>
 
-            <View style={styles.card}>
+            <Card>
+                <Text style={styles.label}>Pending Orders</Text>
+                <Text style={styles.value}>{pendingOrders}</Text>
+            </Card>
+
+            <Card>
                 <Text style={styles.label}>Total Customers</Text>
                 <Text style={styles.value}>{customers.length}</Text>
-            </View>
+            </Card>
 
-            <View style={styles.card}>
+            <Card>
                 <Text style={styles.label}>Total Revenue</Text>
-                <Text style={styles.value}>€{totalRevenue.toFixed(2)}</Text>
-            </View>
+                <Text style={styles.value}>
+                    €{totalRevenue.toFixed(2)}
+                </Text>
+            </Card>
         </ScrollView>
     );
 }
@@ -59,13 +72,6 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: 'bold',
         marginBottom: 24,
-    },
-    card: {
-        padding: 20,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 10,
-        marginBottom: 16,
     },
     label: {
         fontSize: 14,
